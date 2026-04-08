@@ -1,0 +1,56 @@
+name: Build OpenCV-aarch64
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - "recipes/opencv-aarch64/**"
+      - "profiles/**"
+      - ".github/workflows/build-opencv-aarch64.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install GCC 14 and aarch64 cross-compiler
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            gcc-14 g++-14 \
+            gcc-14-aarch64-linux-gnu \
+            g++-14-aarch64-linux-gnu
+
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
+
+      - name: Install Conan
+        run: pip install conan
+
+      - name: Conan config
+        run: conan profile detect --force
+
+      - name: Authenticate Conan
+        run: |
+          conan remote add conancenter https://center.conan.io --force
+          conan remote add conan-rpi https://conan.mrgi23.com --force
+          conan remote login conan-rpi ${{ secrets.CONAN_USER }} -p ${{ secrets.CONAN_PASS }}
+
+      - name: Build OpenCV-aarch64
+        run: |
+          conan create recipes/opencv-aarch64 \
+          --name=opencv-aarch64 \
+          --version=4.13.0 \
+          --user=mrgi23 \
+          --channel=stable \
+          -pr:b=profiles/build-linux-x86_64 \
+          -pr:h=profiles/host-linux-aarch64 \
+          --build=missing
+
+      - name: Upload package
+        run: |
+          conan upload "opencv-aarch64/4.13.0@mrgi23/stable" -r=conan-rpi --force
