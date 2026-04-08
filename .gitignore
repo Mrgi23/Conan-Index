@@ -1,0 +1,12 @@
+# Conan local data
+.conan/
+conanbuild/
+build/
+cmake-build-*/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Editor/OS noise
+.vscode/
