@@ -1,0 +1,40 @@
+name: Publish LibTorch
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - "recipes/libtorch/**"
+      - ".github/workflows/publish-libtorch.yml"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Conan
+        run: pip install conan
+
+      - name: Conan config
+        run: conan profile detect --force
+
+      - name: Authenticate Conan
+        run: |
+          conan remote add conanmrgi https://conan-upload.mrgi23.com/artifactory/api/conan/Conan-Index --force
+          conan remote login conanmrgi ${{ vars.CONAN_USER }} -p ${{ secrets.CONAN_PASS }}
+
+      - name: Publish LibTorch
+        run: |
+          conan create recipes/libtorch \
+          --name=libtorch \
+          --version=2.8.0-cu128 \
+          --user=mrgi \
+          --channel=release
+
+      - name: Upload package
+        run: |
+          conan upload "libtorch/2.8.0-cu128@mrgi/release" -r=conanmrgi --force

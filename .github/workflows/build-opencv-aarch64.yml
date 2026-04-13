@@ -37,7 +37,7 @@ jobs:
       - name: Authenticate Conan
         run: |
           conan remote add conancenter https://center2.conan.io --force
-          conan remote add conanmrgi https://conan.mrgi23.com/artifactory/api/conan/Conan-Index --force
+          conan remote add conanmrgi https://conan-upload.mrgi23.com/artifactory/api/conan/Conan-Index --force
           conan remote login conanmrgi ${{ vars.CONAN_USER }} -p ${{ secrets.CONAN_PASS }}
 
       - name: Build OpenCV-aarch64
