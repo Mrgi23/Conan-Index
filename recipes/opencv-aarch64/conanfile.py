@@ -1,8 +1,7 @@
 from conan import ConanFile
-from conan.tools.cmake import CMake, CMakeToolchain, CMakeDeps, cmake_layout
-from conan.tools.files import get, rmdir
 from conan.tools.build import check_min_cppstd
-from conan.tools.files import collect_libs
+from conan.tools.cmake import CMake, CMakeDeps, CMakeToolchain, cmake_layout
+from conan.tools.files import collect_libs, copy, get, rmdir
 import os
 
 required_conan_version = ">=2.1"
@@ -64,15 +63,11 @@ class OpenCVAarch64Conan(ConanFile):
             self.requires("protobuf/3.21.12", transitive_libs=True)
 
     def source(self):
-        # Minimal: fetch OpenCV + contrib if you need it; here core repo only
-        get(self,
-            url="https://github.com/opencv/opencv/archive/refs/tags/4.13.0.tar.gz",
-            strip_root=True)
+        get(self, url=f"https://github.com/opencv/opencv/archive/refs/tags/{self.version}.tar.gz", strip_root=True)
 
     def generate(self):
         tc = CMakeToolchain(self)
 
-        # Install layout
         tc.variables["OPENCV_CONFIG_INSTALL_PATH"] = "cmake"
         tc.variables["OPENCV_BIN_INSTALL_PATH"] = "bin"
         tc.variables["OPENCV_LIB_INSTALL_PATH"] = "lib"
@@ -161,7 +156,14 @@ class OpenCVAarch64Conan(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
+        copy(self, "LICENSE", src=self.source_folder, dst=os.path.join(self.package_folder, "licenses"))
         rmdir(self, os.path.join(self.package_folder, "share"))
 
     def package_info(self):
-        self.cpp_info.libs = collect_libs(self)
+        self.cpp_info.libs = [
+            "opencv_core",
+            "opencv_imgproc",
+            "opencv_imgcodecs",
+            "opencv_highgui",
+            "opencv_video",
+        ]
