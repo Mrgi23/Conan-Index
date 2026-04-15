@@ -35,7 +35,7 @@ class OpenCVAarch64Conan(ConanFile):
     "parallel": "openmp",
     "with_jpeg": True,
     "with_png": True,
-    "with_dnn": True,
+    "with_dnn": False,
   }
 
   short_paths = True
