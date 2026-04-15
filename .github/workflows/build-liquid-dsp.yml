@@ -48,6 +48,10 @@ jobs:
           -pr:b=profiles/build-linux-x86_64 \
           --build=missing
 
+      - name: Remove old package
+        run: |
+          conan remove "liquid-dsp/1.7.0@mrgi/release" -r=conanmrgi -c
+
       - name: Upload package
         run: |
           conan upload "liquid-dsp/1.7.0@mrgi/release" -r=conanmrgi --force

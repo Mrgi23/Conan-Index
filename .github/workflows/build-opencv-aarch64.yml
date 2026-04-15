@@ -40,7 +40,7 @@ jobs:
           conan remote add conanmrgi https://conan-upload.mrgi23.com/artifactory/api/conan/Conan-Index --force
           conan remote login conanmrgi ${{ vars.CONAN_USER }} -p ${{ secrets.CONAN_PASS }}
 
-      - name: Build OpenCV-aarch64
+      - name: Build OpenCV-Aarch64
         run: |
           conan create recipes/opencv-aarch64 \
           --name=opencv-aarch64 \
@@ -50,6 +50,10 @@ jobs:
           -pr:b=profiles/build-linux-x86_64 \
           -pr:h=profiles/host-linux-aarch64 \
           --build=missing
+
+      - name: Remove old package
+        run: |
+          conan remove "opencv-aarch64/4.13.0@mrgi/release" -r=conanmrgi -c
 
       - name: Upload package
         run: |

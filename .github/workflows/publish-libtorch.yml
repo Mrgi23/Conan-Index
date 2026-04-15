@@ -35,6 +35,10 @@ jobs:
           --user=mrgi \
           --channel=release
 
+      - name: Remove old package
+        run: |
+          conan remove "libtorch/2.8.0-cu128@mrgi/release" -r=conanmrgi -c
+
       - name: Upload package
         run: |
           conan upload "libtorch/2.8.0-cu128@mrgi/release" -r=conanmrgi --force
