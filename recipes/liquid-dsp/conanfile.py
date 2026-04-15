@@ -72,8 +72,8 @@ class LiquidDSPConan(ConanFile):
     rmdir(self, os.path.join(self.package_folder, "share"))
 
   def package_info(self):
-    self.cpp_info.set_property("cmake_file_name", f"{self.name}")
-    self.cpp_info.set_property("cmake_target_name", f"{self.name}::{self.name}")
+    self.cpp_info.set_property("cmake_file_name", "LiquidDSP")
+    self.cpp_info.set_property("cmake_target_name", "LiquidDSP::LiquidDSP")
 
     self.cpp_info.includedirs = ["include"]
     self.cpp_info.libs = ["liquid"]
