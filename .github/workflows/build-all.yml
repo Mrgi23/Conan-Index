@@ -1,0 +1,105 @@
+name: Build All
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      armadillo: ${{ steps.filter.outputs.armadillo }}
+      aubio: ${{ steps.filter.outputs.aubio }}
+      libtorch: ${{ steps.filter.outputs.libtorch }}
+      liquid-dsp: ${{ steps.filter.outputs.liquid-dsp }}
+      opencv-aarch64: ${{ steps.filter.outputs.opencv-aarch64 }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect changed files
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            armadillo:
+              - 'recipes/armadillo/**'
+              - 'profiles/**'
+              - '.github/workflows/build-armadillo.yml'
+
+            aubio:
+              - 'recipes/aubio/**'
+              - 'profiles/**'
+              - '.github/workflows/build-aubio.yml'
+
+            libtorch:
+              - 'recipes/libtorch/**'
+              - 'profiles/**'
+              - '.github/workflows/publish-libtorch.yml'
+
+            liquid-dsp:
+              - 'recipes/liquid-dsp/**'
+              - 'profiles/**'
+              - '.github/workflows/build-liquid-dsp.yml'
+
+            opencv-aarch64:
+              - 'recipes/opencv-aarch64/**'
+              - 'profiles/**'
+              - '.github/workflows/build-opencv-aarch64.yml'
+
+  aubio:
+    needs: changes
+    if: needs.changes.outputs.aubio == 'true'
+    uses: ./.github/workflows/build-aubio.yml
+    with:
+      CONAN_USER: ${{ vars.CONAN_USER }}
+    secrets:
+      CONAN_PASS: ${{ secrets.CONAN_PASS }}
+
+  armadillo:
+    needs: changes
+    if: needs.changes.outputs.armadillo == 'true'
+    uses: ./.github/workflows/build-armadillo.yml
+    with:
+      CONAN_USER: ${{ vars.CONAN_USER }}
+    secrets:
+      CONAN_PASS: ${{ secrets.CONAN_PASS }}
+
+  libtorch:
+    needs: changes
+    if: needs.changes.outputs.libtorch == 'true'
+    uses: ./.github/workflows/publish-libtorch.yml
+    with:
+      CONAN_USER: ${{ vars.CONAN_USER }}
+    secrets:
+      CONAN_PASS: ${{ secrets.CONAN_PASS }}
+
+  liquid-dsp:
+    needs: changes
+    if: needs.changes.outputs.liquid-dsp == 'true'
+    uses: ./.github/workflows/build-liquid-dsp.yml
+    with:
+      CONAN_USER: ${{ vars.CONAN_USER }}
+    secrets:
+      CONAN_PASS: ${{ secrets.CONAN_PASS }}
+
+  opencv-aarch64:
+    needs: changes
+    if: needs.changes.outputs.opencv-aarch64 == 'true'
+    uses: ./.github/workflows/build-opencv-aarch64.yml
+    with:
+      CONAN_USER: ${{ vars.CONAN_USER }}
+    secrets:
+      CONAN_PASS: ${{ secrets.CONAN_PASS }}
+
+  summary:
+    needs:
+      - aubio
+      - armadillo
+      - libtorch
+      - liquid-dsp
+      - opencv-aarch64
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - run: echo "All builds completed."
