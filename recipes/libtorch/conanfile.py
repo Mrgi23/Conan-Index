@@ -40,8 +40,8 @@ class LibTorchConan(ConanFile):
     copy(self, "*", src=self.source_folder, dst=self.package_folder)
 
   def package_info(self):
-    self.cpp_info.set_property("cmake_file_name", f"{self.name}")
-    self.cpp_info.set_property("cmake_target_name", f"{self.name}::{self.name}")
+    self.cpp_info.set_property("cmake_file_name", "LibTorch")
+    self.cpp_info.set_property("cmake_target_name", "LibTorch::LibTorch")
 
     self.cpp_info.includedirs = [
       "include",
