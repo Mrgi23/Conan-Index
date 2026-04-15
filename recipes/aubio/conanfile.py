@@ -1,6 +1,7 @@
 from conan import ConanFile
 from conan.tools.files import chdir, copy, download, get, rmdir
 import os
+from textwrap import dedent
 
 required_conan_version = ">=2.1"
 
@@ -88,4 +89,21 @@ class AubioConan(ConanFile):
         copy(self, "LICENSE", dst=os.path.join(self.package_folder, "licenses"), src=self.source_folder)
 
     def package_info(self):
+        self.cpp_info.set_property("cmake_file_name", f"{self.name}")
+        self.cpp_info.set_property("cmake_target_name", f"{self.name}::{self.name}")
+
+        self.cpp_info.includedirs = ["include"]
         self.cpp_info.libs = ["aubio"]
+
+        self.cpp_info.description = dedent(f"""
+        conanfile.txt Usage:
+            [requires]
+            {self.name}/{self.version}@mrgi/release
+
+        CMake Usage:
+            find_package(Aubio REQUIRED)
+            target_link_libraries(<target> Aubio::Aubio)
+
+        Include:
+            #include <aubio/aubio.h>
+        """)

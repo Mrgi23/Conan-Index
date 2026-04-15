@@ -2,6 +2,7 @@ from conan import ConanFile
 from conan.tools.cmake import CMake, CMakeDeps, CMakeToolchain, cmake_layout
 from conan.tools.files import get, copy, rmdir
 import os
+from textwrap import dedent
 
 class LiquidDSPConan(ConanFile):
     name = "liquid-dsp"
@@ -69,4 +70,28 @@ class LiquidDSPConan(ConanFile):
         rmdir(self, os.path.join(self.package_folder, "share"))
 
     def package_info(self):
+        self.cpp_info.set_property("cmake_file_name", f"{self.name}")
+        self.cpp_info.set_property("cmake_target_name", f"{self.name}::{self.name}")
+
+        self.cpp_info.includedirs = ["include"]
         self.cpp_info.libs = ["liquid"]
+
+        self.cpp_info.description = dedent(f"""
+        conanfile.txt Usage:
+            [requires]
+            {self.name}/{self.version}@mrgi/release
+
+            [generators]
+            CMakeDeps
+            CMakeToolchain
+
+            [layout]
+            cmake_layout
+
+        CMake Usage:
+            find_package(LiquidDSP REQUIRED)
+            target_link_libraries(<target> LiquidDSP::LiquidDSP)
+
+        Include:
+            #include <liquid/liquid.h>
+        """)

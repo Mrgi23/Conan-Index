@@ -2,6 +2,7 @@ from conan import ConanFile
 from conan.tools.cmake import CMake, CMakeDeps, CMakeToolchain, cmake_layout
 from conan.tools.files import copy, get, rmdir
 import os
+from textwrap import dedent
 
 required_conan_version = ">=2.1"
 
@@ -34,10 +35,6 @@ class ArmadilloConan(ConanFile):
         cmake_layout(self)
 
     def requirements(self):
-        # Use system BLAS/LAPACK by default (safe)
-        # If you want OpenBLAS, uncomment:
-        # if self.options.use_blas or self.options.use_lapack:
-        #     self.requires("openblas/0.3.23")
         pass
 
     def source(self):
@@ -59,8 +56,32 @@ class ArmadilloConan(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
-        copy(self, "LICENSE.txt", src=self.source_folder, dst=os.path.join(self.package_folder, "licenses"))
+        copy(self, "LICENSE", src=self.source_folder, dst=os.path.join(self.package_folder, "licenses"))
         rmdir(self, os.path.join(self.package_folder, "share"))
 
     def package_info(self):
+        self.cpp_info.set_property("cmake_file_name", f"{self.name}")
+        self.cpp_info.set_property("cmake_target_name", f"{self.name}::{self.name}")
+
+        self.cpp_info.includedirs = ["include"]
         self.cpp_info.libs = ["armadillo"]
+
+        self.cpp_info.description = dedent(f"""
+        conanfile.txt Usage:
+            [requires]
+            {self.name}/{self.version}@mrgi/release
+
+            [generators]
+            CMakeDeps
+            CMakeToolchain
+
+            [layout]
+            cmake_layout
+
+        CMake Usage:
+            find_package(Armadillo REQUIRED)
+            target_link_libraries(<target> Armadillo::Armadillo)
+
+        Include:
+            #include <armadillo>
+        """)
