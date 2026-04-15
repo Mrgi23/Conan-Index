@@ -1,6 +1,5 @@
 from conan import ConanFile
-from conan.tools.files import chdir, copy, download, get
-from conan.tools.layout import basic_layout
+from conan.tools.files import chdir, copy, download, get, rmdir
 import os
 
 required_conan_version = ">=2.1"
@@ -69,6 +68,23 @@ class AubioConan(ConanFile):
     def package(self):
         with chdir(self, self.source_folder):
             self.run("make install DESTDIR={}".format(self.package_folder))
+
+        mappings = [
+            ("usr/local/bin", "bin"),
+            ("usr/local/include", "include"),
+            ("usr/local/lib", "lib"),
+        ]
+
+        for src_rel, dst_rel in mappings:
+            src = os.path.join(self.package_folder, src_rel)
+            dst = os.path.join(self.package_folder, dst_rel)
+            if os.path.exists(src):
+                os.makedirs(dst, exist_ok=True)
+                copy(self, "*", src=src, dst=dst)
+
+        usr_dir = os.path.join(self.package_folder, "usr")
+        rmdir(self, usr_dir)
+
         copy(self, "LICENSE", dst=os.path.join(self.package_folder, "licenses"), src=self.source_folder)
 
     def package_info(self):
