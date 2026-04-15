@@ -1,16 +1,17 @@
 name: Build Aubio
 
 on:
-  pull_request:
-    branches: [ main ]
-    paths:
-      - "recipes/aubio/**"
-      - "profiles/**"
-      - ".github/workflows/build-aubio.yml"
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      CONAN_USER:
+        required: true
+        type: string
+    secrets:
+      CONAN_PASS:
+        required: true
 
 jobs:
-  build:
+  build-aubio:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,7 +28,7 @@ jobs:
         run: |
           conan remote add conancenter https://center2.conan.io --force
           conan remote add conanmrgi https://conan-upload.mrgi23.com/artifactory/api/conan/Conan-Index --force
-          conan remote login conanmrgi ${{ vars.CONAN_USER }} -p ${{ secrets.CONAN_PASS }}
+          conan remote login conanmrgi ${{ inputs.CONAN_USER }} -p ${{ secrets.CONAN_PASS }}
 
       - name: Build Aubio
         run: |

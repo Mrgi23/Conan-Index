@@ -1,23 +1,24 @@
 name: Build Armadillo
 
 on:
-  pull_request:
-    branches: [ main ]
-    paths:
-      - "recipes/armadillo/**"
-      - "profiles/**"
-      - ".github/workflows/build-armadillo.yml"
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      CONAN_USER:
+        required: true
+        type: string
+    secrets:
+      CONAN_PASS:
+        required: true
 
 jobs:
-  build:
+  build-armadillo:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install GCC 14 and aarch64 cross-compiler
+      - name: Install GCC 14
         run: |
           sudo apt update
           sudo apt install -y gcc-14 g++-14
@@ -35,7 +36,7 @@ jobs:
         run: |
           conan remote add conancenter https://center2.conan.io --force
           conan remote add conanmrgi https://conan-upload.mrgi23.com/artifactory/api/conan/Conan-Index --force
-          conan remote login conanmrgi ${{ vars.CONAN_USER }} -p ${{ secrets.CONAN_PASS }}
+          conan remote login conanmrgi ${{ inputs.CONAN_USER }} -p ${{ secrets.CONAN_PASS }}
 
       - name: Build Armadillo
         run: |

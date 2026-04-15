@@ -1,16 +1,17 @@
-name: Build OpenCV-aarch64
+name: Build OpenCV-Aarch64
 
 on:
-  pull_request:
-    branches: [ main ]
-    paths:
-      - "recipes/opencv-aarch64/**"
-      - "profiles/**"
-      - ".github/workflows/build-opencv-aarch64.yml"
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      CONAN_USER:
+        required: true
+        type: string
+    secrets:
+      CONAN_PASS:
+        required: true
 
 jobs:
-  build:
+  build-opencv-aarch64:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,7 +39,7 @@ jobs:
         run: |
           conan remote add conancenter https://center2.conan.io --force
           conan remote add conanmrgi https://conan-upload.mrgi23.com/artifactory/api/conan/Conan-Index --force
-          conan remote login conanmrgi ${{ vars.CONAN_USER }} -p ${{ secrets.CONAN_PASS }}
+          conan remote login conanmrgi ${{ inputs.CONAN_USER }} -p ${{ secrets.CONAN_PASS }}
 
       - name: Build OpenCV-Aarch64
         run: |
