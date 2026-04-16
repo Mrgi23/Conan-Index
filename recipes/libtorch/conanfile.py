@@ -48,12 +48,13 @@ class LibTorchConan(ConanFile):
       "include/torch/csrc/api/include",
     ]
     self.cpp_info.libs = [
+      "c10",
+      "c10_cuda",
       "torch",
       "torch_cpu",
       "torch_cuda",
-      "c10",
-      "c10_cuda",
-      "torch_global_deps"
+      "torch_global_deps",
+      "torch_python"
     ]
 
     self.cpp_info.description = dedent(f"""
