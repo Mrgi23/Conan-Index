@@ -1,4 +1,4 @@
-name: Build OpenCV-Aarch64
+name: Publish OpenCV-ARMV8
 
 on:
   workflow_call:
@@ -11,23 +11,12 @@ on:
         required: true
 
 jobs:
-  build-opencv-aarch64:
+  publish-opencv-armv8:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install GCC 14 and aarch64 cross-compiler
-        run: |
-          sudo apt update
-          sudo apt install -y \
-            gcc-14 g++-14 \
-            gcc-14-aarch64-linux-gnu \
-            g++-14-aarch64-linux-gnu
-
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
-          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
 
       - name: Install Conan
         run: pip install conan
@@ -37,25 +26,22 @@ jobs:
 
       - name: Authenticate Conan
         run: |
-          conan remote add conancenter https://center2.conan.io --force
           conan remote add conanmrgi https://conan-upload.mrgi23.com/artifactory/api/conan/Conan-Index --force
           conan remote login conanmrgi ${{ inputs.CONAN_USER }} -p ${{ secrets.CONAN_PASS }}
 
-      - name: Build OpenCV-Aarch64
+      - name: Publish OpenCV-ARMV8
         run: |
-          conan create recipes/opencv-aarch64 \
-          --name=opencv-aarch64 \
+          conan create recipes/opencv-armv8 \
+          --name=opencv-armv8 \
           --version=4.13.0 \
           --user=mrgi \
           --channel=release \
-          -pr:b=profiles/build-linux-x86_64 \
           -pr:h=profiles/host-linux-aarch64 \
-          --build=missing
 
       - name: Remove old package
         run: |
-          conan remove "opencv-aarch64/4.13.0@mrgi/release" -r=conanmrgi -c
+          conan remove "opencv-armv8/4.13.0@mrgi/release" -r=conanmrgi -c
 
       - name: Upload package
         run: |
-          conan upload "opencv-aarch64/4.13.0@mrgi/release" -r=conanmrgi --force
+          conan upload "opencv-armv8/4.13.0@mrgi/release" -r=conanmrgi --force

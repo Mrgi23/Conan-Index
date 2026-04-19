@@ -13,7 +13,7 @@ jobs:
       aubio: ${{ steps.filter.outputs.aubio }}
       libtorch: ${{ steps.filter.outputs.libtorch }}
       liquid-dsp: ${{ steps.filter.outputs.liquid-dsp }}
-      opencv-aarch64: ${{ steps.filter.outputs.opencv-aarch64 }}
+      opencv-armv8: ${{ steps.filter.outputs.opencv-armv8 }}
     steps:
       - uses: actions/checkout@v4
 
@@ -29,12 +29,12 @@ jobs:
 
             aubio:
               - 'recipes/aubio/**'
-              - 'profiles/**'
+              - 'profiles/'
               - '.github/workflows/build-aubio.yml'
 
             libtorch:
               - 'recipes/libtorch/**'
-              - 'profiles/**'
+              - 'profiles/build-linux-x86_64'
               - '.github/workflows/publish-libtorch.yml'
 
             liquid-dsp:
@@ -42,10 +42,10 @@ jobs:
               - 'profiles/**'
               - '.github/workflows/build-liquid-dsp.yml'
 
-            opencv-aarch64:
-              - 'recipes/opencv-aarch64/**'
-              - 'profiles/**'
-              - '.github/workflows/build-opencv-aarch64.yml'
+            opencv-armv8:
+              - 'recipes/opencv-armv8/**'
+              - 'profiles/host-linux-aarch64/'
+              - '.github/workflows/publish-opencv-armv8.yml'
 
   aubio:
     needs: changes
@@ -83,10 +83,10 @@ jobs:
     secrets:
       CONAN_PASS: ${{ secrets.CONAN_PASS }}
 
-  opencv-aarch64:
+  opencv-armv8:
     needs: changes
-    if: needs.changes.outputs.opencv-aarch64 == 'true'
-    uses: ./.github/workflows/build-opencv-aarch64.yml
+    if: needs.changes.outputs.opencv-armv8 == 'true'
+    uses: ./.github/workflows/publish-opencv-armv8.yml
     with:
       CONAN_USER: ${{ vars.CONAN_USER }}
     secrets:
@@ -98,7 +98,7 @@ jobs:
       - armadillo
       - libtorch
       - liquid-dsp
-      - opencv-aarch64
+      - opencv-armv8
     runs-on: ubuntu-latest
     if: always()
     steps:
