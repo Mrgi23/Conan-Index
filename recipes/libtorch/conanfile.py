@@ -1,13 +1,12 @@
 from conan import ConanFile
 from conan.tools.files import copy, get
-from conan.tools.layout import basic_layout
 from textwrap import dedent
 
 required_conan_version = ">=2.1"
 
 class LibTorchConan(ConanFile):
   name = "libtorch"
-  version = "2.8.0-cu128"
+  version = "2.12.0-cu132"
 
   package_type = "library"
   settings = "os", "arch"
@@ -40,22 +39,10 @@ class LibTorchConan(ConanFile):
     copy(self, "*", src=self.source_folder, dst=self.package_folder)
 
   def package_info(self):
-    self.cpp_info.set_property("cmake_file_name", "LibTorch")
-    self.cpp_info.set_property("cmake_target_name", "LibTorch::LibTorch")
+    self.cpp_info.set_property("cmake_find_mode", "none")
+    self.cpp_info.set_property("cmake_file_name", "Torch")
 
-    self.cpp_info.includedirs = [
-      "include",
-      "include/torch/csrc/api/include",
-    ]
-    self.cpp_info.libs = [
-      "c10",
-      "c10_cuda",
-      "torch",
-      "torch_cpu",
-      "torch_cuda",
-      "torch_global_deps",
-      "torch_python"
-    ]
+    self.cpp_info.builddirs = ["share/cmake"]
 
     self.cpp_info.description = dedent(f"""
     conanfile.txt Usage:
@@ -63,8 +50,8 @@ class LibTorchConan(ConanFile):
       {self.name}/{self.version}@mrgi/release
 
     CMake Usage:
-      find_package(LibTorch REQUIRED)
-      target_link_libraries(<target> LibTorch::LibTorch)
+      find_package(Torch REQUIRED)
+      target_link_libraries(<target> ${{TORCH_LIBRARIES}})
 
     Include:
       #include <torch/torch.h>
