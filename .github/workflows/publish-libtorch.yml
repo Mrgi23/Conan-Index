@@ -33,14 +33,14 @@ jobs:
         run: |
           conan create recipes/libtorch \
           --name=libtorch \
-          --version=2.8.0-cu128 \
+          --version=2.12.0-cu132 \
           --user=mrgi \
           --channel=release
 
       - name: Remove old package
         run: |
-          conan remove "libtorch/2.8.0-cu128@mrgi/release" -r=conanmrgi -c
+          conan remove "libtorch/2.12.0-cu132@mrgi/release" -r=conanmrgi -c
 
       - name: Upload package
         run: |
-          conan upload "libtorch/2.8.0-cu128@mrgi/release" -r=conanmrgi --force
+          conan upload "libtorch/2.12.0-cu132@mrgi/release" -r=conanmrgi --force
