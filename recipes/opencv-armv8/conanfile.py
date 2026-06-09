@@ -29,7 +29,7 @@ class OpencvARMV8Conan(ConanFile):
       raise Exception("opencv-armv8 is only available as a shared library")
 
   def source(self):
-    url = f"https://s3.mrgi23.com/builds/opencv/{self.version}/{self.name}.tar.gz"
+    url = f"https://s3.mrgi23.com/builds/linux/opencv/{self.version}/{self.name}.tar.gz"
     get(self, url, strip_root=True)
 
   def build(self):
