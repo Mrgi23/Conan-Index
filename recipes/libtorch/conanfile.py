@@ -29,7 +29,7 @@ class LibTorchConan(ConanFile):
       raise Exception("libtorch is only available as a shared library")
 
   def source(self):
-    url = f"https://s3.mrgi23.com/builds/{self.name}/{self.version}/{self.name}.tar.gz"
+    url = f"https://s3.mrgi23.com/builds/linux/{self.name}/{self.version}/{self.name}.tar.gz"
     get(self, url, strip_root=True)
 
   def build(self):
