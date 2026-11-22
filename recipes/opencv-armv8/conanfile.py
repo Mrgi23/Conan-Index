@@ -6,7 +6,7 @@ required_conan_version = ">=2.1"
 
 class OpencvARMV8Conan(ConanFile):
   name = "opencv-armv8"
-  version = "4.14.0"
+  version = "4.14.0.png"
 
   package_type = "library"
   settings = "os", "arch"

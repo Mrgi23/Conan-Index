@@ -33,15 +33,15 @@ jobs:
         run: |
           conan create recipes/opencv-armv8 \
           --name=opencv-armv8 \
-          --version=4.14.0 \
+          --version=4.14.0.png \
           --user=mrgi \
           --channel=release \
           -pr:h=profiles/host-linux-aarch64 \
 
       - name: Remove old package
         run: |
-          conan remove "opencv-armv8/4.14.0@mrgi/release" -r=conanmrgi -c
+          conan remove "opencv-armv8/4.14.0.png@mrgi/release" -r=conanmrgi -c
 
       - name: Upload package
         run: |
-          conan upload "opencv-armv8/4.14.0@mrgi/release" -r=conanmrgi --force
+          conan upload "opencv-armv8/4.14.0.png@mrgi/release" -r=conanmrgi --force
